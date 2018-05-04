@@ -1,0 +1,155 @@
+<template>
+    <div class="calculator">
+        <div class="display" >
+            <input id="display" value="{{display}}"></input>
+        </div>
+        <div class="row">
+            <input class="btn_nol" type="button" value="7" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="8" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="9" onclick="onClickHandler('')">
+            <input class="btn_func" type="button" value="DEL" onclick="onClickHandler('')">
+        </div>
+        <div class="row">
+            <input class="btn_nol" type="button" value="4" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="5" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="6" onclick="onClickHandler('')">
+            <input class="btn_func" type="button" value="+" onclick="onClickHandler('')">
+        </div>
+        <div class="row">
+            <input class="btn_nol" type="button" value="1" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="2" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="3" onclick="onClickHandler('')">
+            <input class="btn_func" type="button" value="AC" onclick="onClickHandler('')">
+        </div>
+        <div class="row">
+            <input class="btn_nol" type="button" value="$">
+            <input class="btn_nol" type="button" value="0" onclick="onClickHandler('')">
+            <input class="btn_nol" type="button" value="." onclick="onClickHandler('')">
+            <input class="btn_func" type="button" value="=" onclick="onClickHandler('')">
+        </div>
+    </div>
+</template>
+
+<script>
+    var result = "";
+    var point = 0;
+    var last = "";
+    var count = 0;
+    function input(param,that) {
+        switch(param){
+        case 'AC' :
+            result = "";
+            point = 0;
+            last = "";
+            count = 0;
+            break;
+        case '+' :
+            if(last != '+' && last != ''){
+                result = eval(result);
+                result += '+';
+                point = 0;
+                count = 0;
+            }
+            break;
+        case '.' :
+            if(point == 0){
+                result += '.';
+                point++;
+            }
+            break;
+        case '=' :
+            if(last == '+' || last == '.') {
+                result += '0';
+            }
+            point = 0;
+            count = 0;
+            result = eval(result);
+            result += '';
+            var n = result.lastIndexOf('.');
+            if(n != -1){
+                count = result.length - n -1;
+                point = 1;
+            }
+            break;
+        case 'DEL' :
+            if(result != ""){
+                if(count > 0){ count--; }
+                if(last == '.'){ point = 0; }
+                result = result.substring(0,result.length-1);
+                if(last == '+'){
+                    count = result.length - result.lastIndexOf('.') -1;
+                    point = 1;
+                }
+            }
+            break;
+        case '0' :
+            if(last == '+' || last == ''){
+                result += '0.';
+                point++;
+            }else{
+                if(count < 2){
+                    result += param;
+                    if(point == 1){
+                        count++;
+                    }
+                }
+            }
+            break;
+        default :
+            if(count < 2){
+                result += param;
+                if(point == 1){
+                    count++;
+                }
+            }
+        }
+        last = result.charAt( result.length-1 );
+        that.display = result;
+    }
+
+    export default{
+        onClickHandler (p,event) {
+            var value = event.target.attr.value; 
+            input(value,this);
+            this.$page.setTitleBar({ text: last+" count:"+count+" point:"+point })
+        },
+        public: {
+            display: '0.00'
+        }
+    }
+</script>
+
+<style>
+    .calculator {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .display {
+        width: 100%;
+        height: 80%;
+        background-color: #ffffff;
+        border-width: 1px;
+        align-items: center;
+    }
+    #display {
+        font-size: 64px;
+    }
+    .row {
+        margin: 0px;
+        height: 25%;
+    }
+    .btn_nol {
+        width: 25%;
+        height: 100%;
+        border-width: 1px;
+        background-color: #dddddd;
+    }
+    .btn_func {
+        width: 25%;
+        height: 100%;
+        background-color: #ee7700;
+        border-width: 1px;
+    }
+</style>
+
